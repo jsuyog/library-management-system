@@ -30,7 +30,7 @@ contract librarymgmt{
     }
     function issueBooks(address _to,string memory _name) public {
         require(msg.sender == librarian,"NOT AUTH");
-        require(addresstoNoBooks[_to] == 0,"ONLY ONE BOOK ALLOWED");
+        require(addresstoNoBooks[_to] == 0,"ONLY ONE BOOK ALLOWED AT A TIME");
         for(uint16 i  = 0;i < books.length;i++){
             if(keccak256(abi.encodePacked(_name)) == keccak256(abi.encodePacked(books[i].name))){
                 addresstobook[_to] = books[i];
@@ -40,7 +40,7 @@ contract librarymgmt{
     }
     function allBooks() public returns(string[] memory){
         if(bo.length == totalBooks){
-
+            return bo;
         }else{
             for(uint16 i = 0;i < books.length;i++){
             bo.push(books[i].name);
@@ -52,7 +52,7 @@ contract librarymgmt{
         return(addresstobook[_addr].name,addresstobook[_addr].genere);
     }
     function returnBook() public {
-        require(addresstoNoBooks[msg.sender] > 0,"ISME TO KUCH NAHI HAI");
+        require(addresstoNoBooks[msg.sender] > 0,"Nothing In Here");
         delete(addresstobook[msg.sender]);
         addresstoNoBooks[msg.sender]--;
     }
