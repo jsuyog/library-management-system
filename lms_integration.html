@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> LMS </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/3.0.0-rc.5/web3.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="d-grid gap-2 col-6 mx-auto mt-10 center" style="width: 30%; margin-top: 100px;">
+        <button class="btn btn-primary" id="connectToMetamask"> CONNECT </button>
+        <p id="addressDis"></p>
+        Add Book : <input type="text" name="" id="bnametoadd">
+        <button class="btn btn-primary" id="addBook"> Add Book </button>
+        Display Data Of Book : <input type="text" name="" id="thisBook">
+        <button class="btn btn-primary" id="disBook"> Display </button>
+        Transfer This Book To Me: <input type="text" name="" id="thisBookTransfer">
+        <button class="btn btn-primary" id="disBookTransfer"> Transfer </button>
+        <p id="displayBooks"></p>
+
+    </div>
+
+    <script>
+        const web3 = new Web3(window.ethereum);
+        
+        const abi = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "_bname",
+                        "type": "string"
+                    }
+                ],
+                "name": "addBook",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint16",
+                        "name": "_id",
+                        "type": "uint16"
+                    }
+                ],
+                "name": "bookTransfer",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint16",
+                        "name": "",
+                        "type": "uint16"
+                    }
+                ],
+                "name": "addOwner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint16",
+                        "name": "_id",
+                        "type": "uint16"
+                    }
+                ],
+                "name": "getDetails",
+                "outputs": [
+                    {
+                        "internalType": "uint16",
+                        "name": "bid",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "book_name",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "current_owner",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint16",
+                        "name": "_id",
+                        "type": "uint16"
+                    }
+                ],
+                "name": "ownerOfBook",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "totalBooks",
+                "outputs": [
+                    {
+                        "internalType": "uint16",
+                        "name": "",
+                        "type": "uint16"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "userBooks",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+        const contractAddress = "0x1973291E9f4E6c2de5C9c4A3f1c49008Cbae06c2";
+        const contract = new web3.eth.Contract(abi, contractAddress);   
+
+        document.getElementById("connectToMetamask").addEventListener("click", async () => {
+            if (web3 !== 'undefined') {
+                accounts = await ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+                account = accounts[0]
+                document.getElementById('addressDis').innerHTML = account;
+                connectToContract();
+            } else {
+                console.log("NO");
+            }
+        });
+
+        const connectToContract = async () => {
+            try {
+                console.log("done");
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        document.getElementById("addBook").addEventListener("click", async () => {
+            try {
+                await contract.methods.addBook(document.getElementById("bnametoadd").value).send({from: account, gas: "300000"}).then(console.log("done"));
+            } catch (error) {
+                console.log(error)                
+            }
+        });
+        // document.getElementById("idBook").value
+        document.getElementById("disBook").addEventListener("click",async () => {
+            await contract.methods.getDetails(document.getElementById("thisBook").value).call().then((data) => {
+                console.log(data.bid,data.book_name,data.current_owner);
+            })
+        });
+
+        document.getElementById("disBookTransfer").addEventListener("click", async () => {
+            try {
+                await contract.methods.bookTransfer(document.getElementById("thisBookTransfer").value).send({from: account, gas: "300000"}).then(console.log("done"));
+            } catch (error) {
+                console.log(error)                
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
